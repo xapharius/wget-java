@@ -106,37 +106,17 @@ public class ArgParser {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 
 	public void checkSaveToFile(ArrayList<String> argList) throws ParseException{
-		//check short command
-		while(argList.contains("-O")){
-			int index = argList.indexOf("-O");
-			//doesnt have an argument (or is last)
-			if(index + 1 >= argList.size() || argList.get(index+1).startsWith("-")){
-				throw new ParseException("wget: option requires an argument -- 'O'");
-			}
-			//update dictionary
-			params.put("SaveToFile", argList.get(index + 1));
-			//remove from list
-			argList.remove(index);
-			argList.remove(index);
-		}
-		//check long command
-		Iterator<String> iter = argList.iterator();
-		//iterate and split since option and parameter are in one token
-		while (iter.hasNext()) {
-		   String str = iter.next();
-		   if(str.startsWith("--output-document=")){
-			   String[] splits = str.split("=",2);
-			   if(splits[1].equals("")){
-				   throw new ParseException("wget: option requires an argument '--output-document=FILENAME'");
-			   }
-			   params.put("SaveToFile", splits[1]);
-			   iter.remove();
-		   }
-		}				
+		String strArg;
+		strArg = OptionFinder.getArgShortOption(argList, "-O", "wget: option requires an argument -- 'O'");	
+		if (strArg != null) params.put("SaveToFile", strArg);
+		strArg = OptionFinder.getArgLongOption(argList, "--output-document", "wget: option requires an argument '--output-document=FILENAME'");	
+		if (strArg != null) params.put("SaveToFile", strArg);
 	}
+	
+	
 
 
 	/**
