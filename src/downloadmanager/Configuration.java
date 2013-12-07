@@ -1,7 +1,7 @@
 /**
  * Class holding parameters
  */
-package main;
+package downloadmanager;
 
 import java.util.HashMap;
 
@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @author Mihai Suteu
  *
  */
-public class Config {
+public class Configuration {
 	
 	private HashMap<String, String> params;
 	
@@ -22,7 +22,7 @@ public class Config {
 	}
 
 
-	public Config(){
+	public Configuration(){
 		params = new HashMap<String, String>();
 		//SaveToFile -O
 		params.put("SaveToFile", "");
@@ -30,7 +30,7 @@ public class Config {
 		
 	}
 		
-	public void setConfigs(HashMap<String, String> argDict){
+	public void configure(HashMap<String, String> argDict){
 		params.putAll(argDict);
 	}
 	

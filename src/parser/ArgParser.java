@@ -4,6 +4,8 @@
  */
 package parser;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,6 +50,12 @@ public class ArgParser {
 			//-t, --tries=NUMBER
 			checkTries();
 			
+			//check if Args left
+			
+			
+			//URL
+			checkURL(argList);
+			
 		}
 		catch(ParseException e){
 			System.out.println(e.getMessage());
@@ -59,6 +67,23 @@ public class ArgParser {
 	}
 	
 	
+	public void checkURL(ArrayList<String> argList) throws ParseException{
+		if (argList.size() == 0){
+			throw new ParseException("expecting URL, got no arguments left");
+		}
+		if (argList.size() > 1){
+			throw new ParseException("expecting URL, got still arguments left");
+		}
+		try {
+			new URL(argList.get(0));
+		} catch (MalformedURLException e) {
+			throw new ParseException("Malformed URL");
+		}
+		
+		params.put("URL", argList.get(0));
+		argList.remove(0);
+	}
+
 	private void checkTries() throws ParseException{
 		// TODO Auto-generated method stub
 		
