@@ -26,6 +26,8 @@ public class Configuration {
 		params = new HashMap<String, String>();
 		//SaveToFile -O
 		params.put("SaveToFile", "");
+		
+		params.put("Spider", "false");
 		//TODO other params
 		
 	}

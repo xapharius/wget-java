@@ -22,7 +22,7 @@ public class Main {
 		if(params == null) return;
 		
 		DownloadManager dmanager = new DownloadManager();
-		dmanager.configure(params);
+		//dmanager.configure(params);
 		
 		
 	}

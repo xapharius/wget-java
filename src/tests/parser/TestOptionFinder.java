@@ -15,6 +15,7 @@ public class TestOptionFinder {
 
 	private ArrayList<String> argList;
 	private String retArg;
+	private Boolean hasArg;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -176,8 +177,73 @@ public class TestOptionFinder {
 			retArg = OptionFinder.getArgLongOption(argList, "--output-document", "error-OL");
 			fail("No exception thrown");
 		} catch (ParseException e) {
-			assertTrue(e.getMessage().startsWith("error-OL"));
+			assertTrue(e.getMessage().equals("error-OL"));
 		}
+	}
+	
+	/**
+	 * Test whether Long option is found and removed
+	 */
+	@Test
+	public void testHasLongOptionPositive(){
+		argList.add("--spider");	
+		argList.add("filename");
+		try {
+			hasArg = OptionFinder.hasLongOption(argList, "--spider", "error-spider");
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertTrue(hasArg);
+		assertEquals(1, argList.size());	
+	}
+	
+	/**
+	 * Test whether all multiple occurences are found and removed
+	 */
+	@Test
+	public void testHasLongOptionMultipleOccurences(){
+		argList.add("--spider");	
+		argList.add("filename");
+		argList.add("--spider");	
+		try {
+			hasArg = OptionFinder.hasLongOption(argList, "--spider", "error-spider");
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertTrue(hasArg);
+		assertEquals(1, argList.size());	
+	}
+	
+	/**
+	 * Test whether Long option is not found
+	 */
+	@Test
+	public void testHasLongOptionNegative(){
+		argList.add("--something");	
+		argList.add("filename");
+		try {
+			hasArg = OptionFinder.hasLongOption(argList, "--spider", "error-spider");
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertFalse(hasArg);
+		assertEquals(2, argList.size());	
+	}
+	
+	/**
+	 * Test if throws exception
+	 */
+	@Test
+	public void testHasLongOptionException(){
+		argList.add("--spider=true");	
+		argList.add("filename");
+		try {
+			hasArg = OptionFinder.hasLongOption(argList, "--spider", "error-spider");
+			fail("No exception thrown");
+		} catch (ParseException e) {
+			assertTrue(e.getMessage().equals("error-spider"));
+		}
+		assertEquals(2, argList.size());	
 	}
 
 }

@@ -63,5 +63,29 @@ public class OptionFinder {
 		}
 		return retArg;
 	}
+
+	/**
+	 * Sees whether option appears in argument List
+	 * @param argList
+	 * @param option
+	 * @param parseErrorMessage
+	 * @return True or False
+	 * @throws ParseException
+	 */
+	public static Boolean hasLongOption(ArrayList<String> argList, String option, String parseErrorMessage) throws ParseException{
+		Iterator<String> iter = argList.iterator();
+		//iterate and split since option and parameter are in one token
+		while (iter.hasNext()) {
+		   String str = iter.next();
+		   if(str.startsWith(option + "=")){
+			   throw new ParseException(parseErrorMessage);
+		   }
+		}
+		if(argList.contains(option)){
+			while(argList.contains(option)) argList.remove(option);
+			return true;
+		}
+		return false;
+	}
 	
 }

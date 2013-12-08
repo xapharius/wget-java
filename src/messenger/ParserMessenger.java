@@ -1,5 +1,5 @@
 /**
- * Class containing all prints to stdout
+ * Class containing all prints to stdout relating parsing
  */
 package messenger;
 
@@ -7,7 +7,7 @@ package messenger;
  * @author Mihai Suteu
  *
  */
-public class UserMessenger {
+public class ParserMessenger {
 	/**
 	 * print help message
 	 */
@@ -15,6 +15,7 @@ public class UserMessenger {
 		System.out.println("wget Help");
 		System.out.println("Usage: wget [OPTION]... [URL]...");
 		System.out.println("`-O filname` \t Save to named file");
+		System.out.println("`--spider` \t To see if remote file is available");
 	}
 	
 	/**

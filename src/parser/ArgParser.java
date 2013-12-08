@@ -41,12 +41,13 @@ public class ArgParser {
 		try{
 			//-O, --output-document=FILE
 			checkSaveToFile(argList);
+			//-S, --spider
+			checkSpider(argList);
 			//-c
 			checkContinue();
 			//-limit-rate=RATE
 			checkLimitRate();
-			//-S, --spider
-			checkSpider();
+
 			//-t, --tries=NUMBER
 			checkTries();
 			
@@ -59,7 +60,7 @@ public class ArgParser {
 		}
 		catch(ParseException e){
 			System.out.println(e.getMessage());
-			messenger.UserMessenger.printUsage();
+			messenger.ParserMessenger.printUsage();
 			return null;
 		}
 			
@@ -89,13 +90,6 @@ public class ArgParser {
 		
 	}
 
-
-	private void checkSpider() throws ParseException{
-		// TODO Auto-generated method stub
-		
-	}
-
-
 	private void checkLimitRate() throws ParseException{
 		// TODO Auto-generated method stub
 		
@@ -107,6 +101,14 @@ public class ArgParser {
 		
 	}
 	
+
+	public void checkSpider(ArrayList<String> argList) throws ParseException{
+		Boolean hasOption;
+		hasOption = OptionFinder.hasLongOption(argList, "--spider", "wget: option doesn't require an argument '--spider'");	
+		if (hasOption) params.put("Spider", "true");
+		else params.put("Spider", "false");
+		
+	}
 
 	public void checkSaveToFile(ArrayList<String> argList) throws ParseException{
 		String strArg;
@@ -126,13 +128,13 @@ public class ArgParser {
 	public Boolean trivialCases(String[] args){
 //		no arguments provided
 		if (args.length == 0){
-			messenger.UserMessenger.printNoArgs();
+			messenger.ParserMessenger.printNoArgs();
 			return true;
 		}
 
 //		if help arg anywhere
 		if (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help")){
-			messenger.UserMessenger.printHelp();
+			messenger.ParserMessenger.printHelp();
 			return true;
 		}
 		
