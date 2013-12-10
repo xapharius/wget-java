@@ -29,31 +29,29 @@ public class ArgParser {
 	 *  @param args	arguments for wget
 	 *  @return True if wget can be run with args, false if not
 	 */
-	public HashMap<String, String> parseArgs(String[] args){
+	public HashMap<String, String> parseArgs(ArrayList<String> _argList){
 		System.out.println("parsing arguments...");
 		
+		//create member _argList for better testing
+		argList = _argList;
+		
 //		check if no_args or help
-		if (trivialCases(args)) return null;
+		if (trivialCases(argList)) return null;
 		
-//		check for valid arguments and put them to dictionary
-		
-//		remove arg from List after parsed		
-		argList = new ArrayList<String>(Arrays.asList(args));
-		
+//		check for valid arguments and put them to dictionary		
+//		remove arg from List after parsed				
 		try{
 			//-O, --output-document=FILE
 			checkSaveToFile(argList);
 			//--spider
 			checkSpider(argList);
 			//-t, --tries=NUMBER
-			checkTries(argList);
-			
-			//-i
+			checkTries(argList);	
+			//--input-file
 			//download multiple files specified in local text document
-			
+			checkFileList(argList);
 			//check if Args left
 			checkForLeftovers(argList);
-			
 			//URL
 			checkURL(argList);
 			
@@ -68,6 +66,13 @@ public class ArgParser {
 		return params;
 	}
 	
+	public void checkFileList(ArrayList<String> argList) throws ParseException {
+		Boolean hasOption;
+		hasOption = OptionFinder.hasLongOption(argList, "--input-file", "wget: option doesn't require an argument '--input-file'");	
+		if (hasOption) params.put("FileList", "true");
+		else params.put("FileList", "false");		
+	}
+
 	/**
 	 * Checks if there are any arguments left in List. If so, they must be unrecognized
 	 * @param argList
@@ -88,26 +93,7 @@ public class ArgParser {
 		if (argList.size() == 0){
 			throw new ParseException("expecting URL, got no arguments left");
 		}
-		//see if unsupported URL
-		String urlStr = argList.get(0);
-		String[] splits = urlStr.split("://", 2);
-		if (splits.length == 2){
-			if (!splits[0].equals("http")){
-				throw new ParseException("Unsupported Protocol!");
-			}
-		}
-		//protocol missing, put http
-		else{
-			urlStr = "http://" + urlStr;
-		}
-		
-		try {
-			new URL(urlStr);
-		} catch (MalformedURLException e) {
-			throw new ParseException("Malformed URL");
-		}
-		
-		params.put("URL", urlStr);
+		params.put("URL", argList.get(0));
 		argList.remove(0);
 	}
 
@@ -116,7 +102,7 @@ public class ArgParser {
 	 * @param argList
 	 * @throws ParseException
 	 */
-	private void checkTries(ArrayList<String> argList) throws ParseException{
+	public void checkTries(ArrayList<String> argList) throws ParseException{
 		String strArg;
 		strArg = OptionFinder.getArgShortOption(argList, "-t", "wget: option requires an argument -- 't'");	
 		if (strArg != null) params.put("Tries", strArg);
@@ -157,15 +143,15 @@ public class ArgParser {
 	 *  @param args	arguments for wget
 	 *  @return True if args trivial and responded, false if not
 	 */
-	public Boolean trivialCases(String[] args){
+	public Boolean trivialCases(ArrayList<String> argList){
 //		no arguments provided
-		if (args.length == 0){
+		if (argList.size() == 0){
 			messenger.ParserMessenger.printNoArgs();
 			return true;
 		}
 
 //		if help arg anywhere
-		if (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help")){
+		if (argList.contains("-h") || argList.contains("--help")){
 			messenger.ParserMessenger.printHelp();
 			return true;
 		}

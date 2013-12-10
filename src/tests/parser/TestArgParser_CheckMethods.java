@@ -66,47 +66,15 @@ public class TestArgParser_CheckMethods {
 	}
 	
 	@Test
-	public void testCheckURL_WellformedURL(){
-		argList.add("http://xapharius.com");
+	public void testCheckURL_URLpresent(){
+		argList.add("xapharius.com");
 		try {
 			parser.checkURL(argList);
 		} catch (ParseException e) {
 			fail("Threw ParseException");
 		}
-		assertEquals(parser.getParams().get("URL"), "http://xapharius.com");
+		assertEquals(parser.getParams().get("URL"), "xapharius.com");
 	}
-	
-	@Test
-	public void testCheckURL_WellformedURLNoProtocol(){
-		argList.add("www.xapharius.com");
-		try {
-			parser.checkURL(argList);
-		} catch (ParseException e) {
-			fail("Threw ParseException");
-		}
-		assertEquals(parser.getParams().get("URL"), "http://www.xapharius.com");
-	}
-	
-	@Test
-	public void testCheckURL_MalformedURL(){
-		argList.add("www.xapharius.com");
-		try {
-			parser.checkURL(argList);
-		} catch (ParseException e) {
-			assertTrue(e.getMessage().equals("Malformed URL"));
-		}
-	}
-	
-	@Test
-	public void testCheckURL_UnsupportedProtocol(){
-		argList.add("ftp://www.xapharius.com");
-		try {
-			parser.checkURL(argList);
-		} catch (ParseException e) {
-			assertTrue(e.getMessage().equals("Unsupported Protocol!"));
-		}
-	}
-	
 	
 	@Test
 	public void testCheckURL_noArgs(){
@@ -151,6 +119,44 @@ public class TestArgParser_CheckMethods {
 			fail("No Exception thrown");
 		} catch (ParseException e) {
 			assertEquals(e.getMessage(), "wget: option doesn't require an argument '--spider'");
+		}
+		
+	}
+	
+	@Test
+	public void testFileList_positive(){
+		argList.add("http://xapharius.com");
+		argList.add("--input-file");	
+		try {
+			parser.checkFileList(argList);
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertEquals(parser.getParams().get("FileList"), "true");
+	}
+	
+	@Test
+	public void testFileList_negative(){
+		argList.add("http://xapharius.com");
+		argList.add("-i");	
+		try {
+			parser.checkFileList(argList);
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertEquals(parser.getParams().get("FileList"), "false");
+	}
+	
+	@Test
+	public void testFileList_exception(){
+		argList.add("http://xapharius.com");
+		argList.add("--input-file");
+		argList.add("--input-file=");
+		try {
+			parser.checkFileList(argList);
+			fail("No Exception thrown");
+		} catch (ParseException e) {
+			assertEquals(e.getMessage(), "wget: option doesn't require an argument '--input-file'");
 		}
 		
 	}

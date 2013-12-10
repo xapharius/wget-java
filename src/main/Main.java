@@ -1,5 +1,6 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -18,9 +19,8 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		ArgParser parser = new ArgParser();
-		HashMap<String, String> params = parser.parseArgs(args);
+		HashMap<String, String> params = parser.parseArgs(new ArrayList<String>(Arrays.asList(args)));
 		if(params == null) return;
 		
 		try {

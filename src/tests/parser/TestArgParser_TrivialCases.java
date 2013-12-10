@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,13 +18,19 @@ public class TestArgParser_TrivialCases {
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 	private ArgParser parser = new ArgParser();
-	private String[] args;
+	private ArrayList<String> argList;
 	
 	@Before
-	public void setUpStreams() {
+	public void setUp() {
 	    System.setOut(new PrintStream(outContent));
 	    System.setErr(new PrintStream(errContent));
-	    
+	    argList = new ArrayList<String>();
+	}
+	
+	@After
+	public void cleanUpStreams() {
+	    System.setOut(null);
+	    System.setErr(null);
 	}
 	
 	/*
@@ -30,8 +38,7 @@ public class TestArgParser_TrivialCases {
 	 */
 	@Test
 	public void testNoArgs(){
-		args = new String[0];
-		parser.trivialCases(args);
+		parser.trivialCases(argList);
 		assertTrue(outContent.toString().startsWith("wget: missing URL"));
 		outContent.reset();
 	}
@@ -41,15 +48,14 @@ public class TestArgParser_TrivialCases {
 	 */
 	@Test
 	public void testHelp(){
-		args = new String[1];
-		
-		args[0] = "-h";
-		parser.trivialCases(args);
+		argList.add("-h");
+		parser.trivialCases(argList);
 		assertTrue(outContent.toString().startsWith("wget Help"));
 		outContent.reset();
+		argList.remove(0);
 		
-		args[0] = "--help";
-		parser.trivialCases(args);
+		argList.add("--help");
+		parser.trivialCases(argList);
 		assertTrue(outContent.toString().startsWith("wget Help"));
 	}
 	
@@ -58,16 +64,11 @@ public class TestArgParser_TrivialCases {
 	 */
 	@Test
 	public void testHelpAnyPos(){
-		String[] args = {"-O", "arg", "-h"};
-		parser.trivialCases(args);
+		argList.add("-O");
+		argList.add("arg");
+		argList.add("-h");
+		parser.trivialCases(argList);
 		assertTrue(outContent.toString().startsWith("wget Help"));
 	}
 	
-	
-
-	@After
-	public void cleanUpStreams() {
-	    System.setOut(null);
-	    System.setErr(null);
-	}
 }

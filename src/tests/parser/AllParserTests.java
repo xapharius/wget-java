@@ -6,8 +6,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ TestArgParser_CheckMethods.class,
-		TestArgParser_TrivialCases.class,
-		TestOptionFinder.class })
+		TestOptionFinder.class,
+		TestArgParser.class,
+		//trival cases has to be run last because of redirecting syso stream
+		TestArgParser_TrivialCases.class})
 public class AllParserTests {
 
 }
