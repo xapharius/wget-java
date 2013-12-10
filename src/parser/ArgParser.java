@@ -19,7 +19,6 @@ import java.util.Iterator;
 public class ArgParser {
 	
 	private HashMap<String, String> params;
-	private ArrayList<String> argList;
 	
 	public ArgParser(){
 		params = new HashMap<String, String>();
@@ -29,12 +28,9 @@ public class ArgParser {
 	 *  @param args	arguments for wget
 	 *  @return True if wget can be run with args, false if not
 	 */
-	public HashMap<String, String> parseArgs(ArrayList<String> _argList){
+	public HashMap<String, String> parseArgs(ArrayList<String> argList){
 		System.out.println("parsing arguments...");
-		
-		//create member _argList for better testing
-		argList = _argList;
-		
+				
 //		check if no_args or help
 		if (trivialCases(argList)) return null;
 		
