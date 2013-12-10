@@ -30,10 +30,11 @@ public class TestConfiguration {
 	 * SaveToFile has default name, since file is not specified
 	 */
 	@Test
-	public void TestConfigureDefaultSaveToFile() {
+	public void TestUpdateSaveToFileKeepDefault() {
 		argDict.put("URL", "http://xapharius.com");
 		try {
-			config.configure(argDict);
+			config.updateParams(argDict);
+			config.updateSaveToFile(argDict);
 		} catch (ConfigurationException e) {
 			fail("Exception thrown");
 		}
@@ -44,10 +45,11 @@ public class TestConfiguration {
 	 * SaveToFile has new name, since file is specified
 	 */
 	@Test
-	public void TestConfigureUpdatedSaveToFile() {
+	public void TestUpdateSaveToFileChange() {
 		argDict.put("URL", "http://xapharius.com/beer.jpg");
+		config.updateParams(argDict);
 		try {
-			config.configure(argDict);
+			config.updateSaveToFile(argDict);
 		} catch (ConfigurationException e) {
 			fail("Exception thrown");
 		}
@@ -58,14 +60,57 @@ public class TestConfiguration {
 	 * SaveToFile has default name, since no file is specified although URL ends in slash
 	 */
 	@Test
-	public void TestConfigureDefaultSaveToFile2() {
+	public void TestUpdateSaveToFileKeepDefault2() {
 		argDict.put("URL", "http://xapharius.com/");
+		config.updateParams(argDict);
 		try {
-			config.configure(argDict);
+			config.updateSaveToFile(argDict);
 		} catch (ConfigurationException e) {
 			fail("Exception thrown");
 		}
 		assertEquals(config.getParamValue("SaveToFile"), "index.html");
+	}
+	
+	/**
+	 * Tries is positive integer
+	 */
+	@Test
+	public void TestCheckSemanticTriesPositive() {
+		argDict.put("Tries", "3");
+		config.updateParams(argDict);
+		try {
+			config.checkSemanticTries();
+		} catch (ConfigurationException e) {
+			fail("Exception thrown");
+		}
+	}
+	
+	/**
+	 * Tries is not a positive integer
+	 */
+	@Test
+	public void TestCheckSemanticTriesNotInteger() {
+		argDict.put("Tries", "3.5");
+		config.updateParams(argDict);
+		try {
+			config.checkSemanticTries();
+			fail("Exception not thrown");
+		} catch (ConfigurationException e) {
+		}
+	}
+	
+	/**
+	 * Tries is not a positive integer
+	 */
+	@Test
+	public void TestCheckSemanticTriesNotPositive() {
+		argDict.put("Tries", "-1");
+		config.updateParams(argDict);
+		try {
+			config.checkSemanticTries();
+			fail("Exception not thrown");
+		} catch (ConfigurationException e) {
+		}
 	}
 
 }

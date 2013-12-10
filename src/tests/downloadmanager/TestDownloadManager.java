@@ -37,7 +37,7 @@ public class TestDownloadManager {
 		try {
 			dManager = new DownloadManager(argDict);
 		} catch (ConfigurationException e) {
-			assertEquals(e.getMessage(), "Missing or Malformed URL");
+			assertEquals(e.getMessage(), "Missing or Malformed URL in Manager Configuration");
 		}
 	}
 

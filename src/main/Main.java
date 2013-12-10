@@ -23,16 +23,13 @@ public class Main {
 		HashMap<String, String> params = parser.parseArgs(args);
 		if(params == null) return;
 		
-		
 		try {
 			DownloadManager dmanager = new DownloadManager(params);
-			dmanager.downloadFile();
-		} catch (ConfigurationException | DownloadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			dmanager.runManager();
+		} catch (ConfigurationException e) {
+			System.out.println(e.getMessage());
 		}
-		
-		
+			
 	}
 
 }

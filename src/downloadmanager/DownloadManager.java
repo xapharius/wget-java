@@ -88,11 +88,21 @@ public class DownloadManager {
 			return;
 		}
 		
-		try {
-			downloadFile();
-		} catch (DownloadException e) {
-			e.printStackTrace();
-		}
+		
+		//download
+		int attempts = 1;
+		Boolean downloaded = false;
+		int nrTries = Integer.parseInt(config.getParamValue("Tries"));
+		do
+			try {
+				downloadFile();
+				downloaded = true;
+			} catch (DownloadException e) {
+				System.out.println("Attempt " + attempts + "/" + nrTries + " failed: " + e.getMessage());
+				System.out.println();
+				++attempts;
+			}
+		while(!downloaded && attempts <= nrTries);
 	}
 	
 	public void downloadFile() throws DownloadException{
@@ -110,13 +120,18 @@ public class DownloadManager {
 		int nrDownloadedBytes = 0;
 		int nrTotalBytes = getFileSize();
 		
-	    try {
-	        //opening streams
-	    	System.out.println("opening streams ...");
-	        httpIn = new BufferedInputStream(url.openStream());
-	        fileOutput = new FileOutputStream(config.getParamValue("SaveToFile"));
+        //opening streams
+        try {
+        	System.out.println("opening streams ...");
+			httpIn = new BufferedInputStream(url.openStream());
+			fileOutput = new FileOutputStream(config.getParamValue("SaveToFile"));
 	        bufferedOut = new BufferedOutputStream(fileOutput, 1024);
-	   
+		} catch (IOException e) {
+			throw new DownloadException("Failed Opening Streams");
+		}
+        
+		
+	    try {
 	        System.out.println("starting download ...");
 	        while (!fileComplete) {
 	        	nrBuffBytes = httpIn.read(buffData, 0, 1024);
@@ -138,7 +153,7 @@ public class DownloadManager {
 	      			bufferedOut.close();
 	      			fileOutput.close();
 	      			httpIn.close();
-	      		} catch (IOException e) {
+	      		} catch (Exception e) {
 	      			throw new DownloadException("Closing Streams Failed");
 	      		}
 	      	}

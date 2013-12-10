@@ -46,7 +46,7 @@ public class ArgParser {
 			//--spider
 			checkSpider(argList);
 			//-t, --tries=NUMBER
-			checkTries();
+			checkTries(argList);
 			
 			//-i
 			//download multiple files specified in local text document
@@ -111,23 +111,24 @@ public class ArgParser {
 		argList.remove(0);
 	}
 
-	private void checkTries() throws ParseException{
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void checkLimitRate() throws ParseException{
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	private void checkContinue() throws ParseException{
-		// TODO Auto-generated method stub
-		
+	/**
+	 * Finds Tries option and argument, removes them from argList
+	 * @param argList
+	 * @throws ParseException
+	 */
+	private void checkTries(ArrayList<String> argList) throws ParseException{
+		String strArg;
+		strArg = OptionFinder.getArgShortOption(argList, "-t", "wget: option requires an argument -- 't'");	
+		if (strArg != null) params.put("Tries", strArg);
+		strArg = OptionFinder.getArgLongOption(argList, "--tries", "wget: option requires an argument '--tries=NUMBER'");	
+		if (strArg != null) params.put("Tries", strArg);
 	}
 	
-
+	/**
+	 * Finds Boolean option, removes it from list
+	 * @param argList
+	 * @throws ParseException
+	 */
 	public void checkSpider(ArrayList<String> argList) throws ParseException{
 		Boolean hasOption;
 		hasOption = OptionFinder.hasLongOption(argList, "--spider", "wget: option doesn't require an argument '--spider'");	
@@ -136,6 +137,11 @@ public class ArgParser {
 		
 	}
 
+	/**
+	 * Finds SaveToFile option and argument, removes them from argList
+	 * @param argList
+	 * @throws ParseException
+	 */
 	public void checkSaveToFile(ArrayList<String> argList) throws ParseException{
 		String strArg;
 		strArg = OptionFinder.getArgShortOption(argList, "-O", "wget: option requires an argument -- 'O'");	
