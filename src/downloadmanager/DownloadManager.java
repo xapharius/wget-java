@@ -1,9 +1,17 @@
 /**
- * 
+ * DownloadManager for 1 give configuration
  */
 package downloadmanager;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,40 +26,32 @@ import messenger.DownloadMessenger;
 public class DownloadManager {
 	private Configuration config;
 	private URL url;
-	private URLConnection conn;
-	private Boolean isConfigured;
-	
-	public DownloadManager(){
-		config = new Configuration();
-		isConfigured = false;
-	}
 	
 	/**
-	 * Configuring DownloadManager by updating download parameters
+	 * Constructs and configures a new Download Manager given the parameters
 	 * @param argDict
 	 * @throws ConfigurationException
 	 */
-	public void configure(HashMap<String, String> argDict) throws ConfigurationException{
+	public DownloadManager(HashMap<String, String> argDict) throws ConfigurationException{
+		System.out.println("configuring Manager for " + argDict.get("URL") + " ...");
+		config = new Configuration();
 		config.configure(argDict);
 		try {
-			url = new URL(argDict.get("URL"));
-			conn = url.openConnection();
+			url = new URL(config.getParamValue("URL"));
 		} catch (MalformedURLException e) {
-			throw new ConfigurationException("malformed URL");
-		} catch (IOException e) {
-			throw new ConfigurationException("URL Open Connection error");
+			throw new ConfigurationException("Missing or Malformed URL");
 		}
-		isConfigured = true;
+		System.out.println("Manager configured!");
 	}
 	
 	/**
-	 * Checks whether resource can be found 
+	 * Checks whether resource can be found, URL from configuration
 	 * @_url URL of resource
 	 * @return
 	 */
-	public Boolean checkRessourceAvailability(URL _url){
+	public Boolean checkRessourceAvailability(){
 		try{
-			URLConnection urlConn = _url.openConnection();
+			URLConnection urlConn = url.openConnection();
 			urlConn.connect();
 			urlConn.getInputStream();
 		}catch (Exception e){
@@ -64,7 +64,8 @@ public class DownloadManager {
 	 * Spider Option passed in wget call - check availability of file
 	 */
 	public void spider(){
-		if (checkRessourceAvailability(url)){
+		System.out.println("checking availability of " + url.toString() + " ...");
+		if (checkRessourceAvailability()){
 			//file is found
 			DownloadMessenger.printFileAvailable();
 		}
@@ -78,11 +79,85 @@ public class DownloadManager {
 	 * Run Manager for configured state
 	 */
 	public void runManager(){
+		
+		//see if local doc option
+		
 		//see if spider option
 		if (config.getParamValue("Spider").equals("true") ){
 			spider();
 			return;
 		}
+		
+		try {
+			downloadFile();
+		} catch (DownloadException e) {
+			e.printStackTrace();
+		}
+	}
 	
+	public void downloadFile() throws DownloadException{
+		
+		System.out.println("preparing download for " + url.toString() + "...");
+		System.out.println("file will be saved as " + config.getParamValue("SaveToFile"));
+		
+		InputStream httpIn = null;
+	    OutputStream fileOutput = null;
+	    OutputStream bufferedOut = null;
+	    
+		boolean fileComplete = false;
+		byte buffData[] = new byte[1024];
+		int nrBuffBytes = 0;
+		int nrDownloadedBytes = 0;
+		
+	    try {
+	        //opening streams
+	    	System.out.println("opening streams ...");
+	        httpIn = new BufferedInputStream(url.openStream());
+	        fileOutput = new FileOutputStream(config.getParamValue("SaveToFile"));
+	        bufferedOut = new BufferedOutputStream(fileOutput, 1024);
+	   
+	        System.out.println("starting download ...");
+	        while (!fileComplete) {
+	        	nrBuffBytes = httpIn.read(buffData, 0, 1024);
+	        	nrDownloadedBytes += nrBuffBytes;
+	        	if (nrBuffBytes == -1) {
+	        		//read returns -1 when reached eof
+	        		fileComplete = true;
+	        		++nrDownloadedBytes;
+	        	} else {
+	        		bufferedOut.write(buffData, 0, nrBuffBytes);
+	        	}      
+	        	//TODO call downloadMessenger to print progress
+	        }
+	      	} catch (Exception e) {
+	      		throw new DownloadException("Download Failed");
+	      	} finally {
+	      		try {
+	      			System.out.println("closing streams ...");
+	      			bufferedOut.close();
+	      			fileOutput.close();
+	      			httpIn.close();
+	      		} catch (IOException e) {
+	      			throw new DownloadException("Closing Streams Failed");
+	      		}
+	      	}
+	}
+	
+	/**
+	 * Gets File Size of remote file, URL from configuration
+	 * @return size of remote file in bytes. -1 if not found
+	 */
+	public int getFileSize() {
+	    HttpURLConnection conn = null;
+	    try {
+	        conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestMethod("HEAD");
+	        conn.getInputStream();
+	        return conn.getContentLength();
+	    } catch (IOException e) {
+	        return -1;
+	    } finally {
+	        conn.disconnect();
+	    }
 	}
 }

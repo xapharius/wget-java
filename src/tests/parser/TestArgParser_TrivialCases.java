@@ -15,13 +15,14 @@ public class TestArgParser_TrivialCases {
 	
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-	private ArgParser parser;
+	private ArgParser parser = new ArgParser();
+	private String[] args;
 	
 	@Before
 	public void setUpStreams() {
 	    System.setOut(new PrintStream(outContent));
 	    System.setErr(new PrintStream(errContent));
-	    parser = new ArgParser();
+	    
 	}
 	
 	/*
@@ -29,8 +30,10 @@ public class TestArgParser_TrivialCases {
 	 */
 	@Test
 	public void testNoArgs(){
-		parser.parseArgs(new String[0]);
+		args = new String[0];
+		parser.trivialCases(args);
 		assertTrue(outContent.toString().startsWith("wget: missing URL"));
+		outContent.reset();
 	}
 	
 	/*
@@ -38,7 +41,7 @@ public class TestArgParser_TrivialCases {
 	 */
 	@Test
 	public void testHelp(){
-		String[] args = new String[1];
+		args = new String[1];
 		
 		args[0] = "-h";
 		parser.trivialCases(args);

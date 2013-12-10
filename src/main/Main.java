@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import parser.ArgParser;
+import downloadmanager.ConfigurationException;
+import downloadmanager.DownloadException;
 import downloadmanager.DownloadManager;;
 
 /**
@@ -21,8 +23,15 @@ public class Main {
 		HashMap<String, String> params = parser.parseArgs(args);
 		if(params == null) return;
 		
-		DownloadManager dmanager = new DownloadManager();
-		//dmanager.configure(params);
+		
+		try {
+			DownloadManager dmanager = new DownloadManager(params);
+			dmanager.downloadFile();
+			System.out.println("file downloaded");
+		} catch (ConfigurationException | DownloadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}

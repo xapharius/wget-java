@@ -96,17 +96,6 @@ public class TestArgParser_CheckMethods {
 	}
 	
 	@Test
-	public void testCheckURL_tooManyArgs(){
-		argList.add("http://xapharius.com");
-		argList.add("also something else");
-		try {
-			parser.checkURL(argList);
-		} catch (ParseException e) {
-			assertTrue(e.getMessage().equals("expecting URL, got still arguments left"));
-		}
-	}
-	
-	@Test
 	public void testCheckSpider_positive(){
 		argList.add("http://xapharius.com");
 		argList.add("--spider");	
@@ -142,6 +131,40 @@ public class TestArgParser_CheckMethods {
 			assertEquals(e.getMessage(), "wget: option doesn't require an argument '--spider'");
 		}
 		
+	}
+	
+	@Test
+	public void testCheckForLeftovers_positive(){
+		argList.add("http://xapharius.com");
+		try {
+			parser.checkForLeftovers(argList);
+		} catch (ParseException e) {
+			fail("Exception thrown");
+		}
+		assertEquals(argList.size(), 1);
+	}
+	
+	@Test
+	public void testCheckForLeftovers_tooManyArgs(){
+		argList.add("http://xapharius.com");
+		argList.add("-t");
+		try {
+			parser.checkForLeftovers(argList);
+			fail("Exception not thrown");
+		} catch (ParseException e) {
+			assertEquals(e.getMessage(), "Unrecognized arguments left");
+		}
+	}
+	
+	@Test
+	public void testCheckForLeftovers_onlyOptionLeft(){
+		argList.add("-t");
+		try {
+			parser.checkForLeftovers(argList);
+			fail("Exception not thrown");
+		} catch (ParseException e) {
+			assertTrue(e.getMessage().startsWith("Unrecognized option"));
+		}
 	}
 	
 }

@@ -4,38 +4,55 @@ import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import downloadmanager.ConfigurationException;
+import downloadmanager.DownloadException;
 import downloadmanager.DownloadManager;
 
 public class TestDownloadManager {
 	
-	private DownloadManager dmanager;
+	private DownloadManager dManager;
+	private HashMap<String, String> argDict;
 
 	@Before
 	public void setUp() throws Exception {
-		dmanager = new DownloadManager();
+		argDict = new HashMap<String, String>();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 	
+	
+	/**
+	 * test for non initialized url
+	 */
+	@Test
+	public void testDownloadManager_missingURL() {
+		try {
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			assertEquals(e.getMessage(), "Missing or Malformed URL");
+		}
+	}
+
 	/**
 	 * test for findable website
 	 */
 	@Test
 	public void testCheckRessourceAvailabilityPositiveAddr() {
-		URL url = null;
+		argDict.put("URL", "http://xapharius.com");
 		try {
-			url = new URL("http://xapharius.com");
-		} catch (MalformedURLException e) {
-			fail("url not initialized correctly");
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail("Manager Configuration Error");
 		}
-		assertTrue(dmanager.checkRessourceAvailability(url));
+		assertTrue(dManager.checkRessourceAvailability());
 	}
 	
 	/**
@@ -43,13 +60,13 @@ public class TestDownloadManager {
 	 */
 	@Test
 	public void testCheckRessourceAvailabilityNegaiveAddr() {
-		URL url = null;
+		argDict.put("URL", "http://xapharius123.com");
 		try {
-			url = new URL("http://xapharius123.com");
-		} catch (MalformedURLException e) {
-			fail("url not initialized correctly");
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail("Manager Configuration Error");
 		}
-		assertFalse(dmanager.checkRessourceAvailability(url));
+		assertFalse(dManager.checkRessourceAvailability());
 	}
 	
 	/**
@@ -57,13 +74,13 @@ public class TestDownloadManager {
 	 */
 	@Test
 	public void testCheckRessourceAvailabilityPositiveFile() {
-		URL url = null;
+		argDict.put("URL", "http://xapharius.com/beer.jpg");
 		try {
-			url = new URL("http://xapharius.com/beer.jpg");
-		} catch (MalformedURLException e) {
-			fail("url not initialized correctly");
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail("Manager Configuration Error");
 		}
-		assertTrue(dmanager.checkRessourceAvailability(url));
+		assertTrue(dManager.checkRessourceAvailability());
 	}
 	
 	/**
@@ -71,22 +88,28 @@ public class TestDownloadManager {
 	 */
 	@Test
 	public void testCheckRessourceAvailabilityNegativeFile() {
-		URL url = null;
+		argDict.put("URL", "http://xapharius.com/beer123.jpg");
 		try {
-			url = new URL("http://xapharius.com/beer123.jpg");
-		} catch (MalformedURLException e) {
-			fail("url not initialized correctly");
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail("Manager Configuration Error");
 		}
-		assertFalse(dmanager.checkRessourceAvailability(url));
+		assertFalse(dManager.checkRessourceAvailability());
 	}
 	
 	/**
-	 * test for non initialized url
+	 * test downloading file, positive 
 	 */
-	@Test
-	public void testCheckRessourceAvailabilityUninitialized() {
-		URL url = null;
-		assertFalse(dmanager.checkRessourceAvailability(url));
+	public void testDownloadFile_positive(){
+		argDict.put("URL", "http://xapharius.com/beer.jpg");
+		try {
+			dManager = new DownloadManager(argDict);
+			dManager.downloadFile();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
 	}
-
+	
+	
 }

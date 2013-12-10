@@ -30,6 +30,8 @@ public class ArgParser {
 	 *  @return True if wget can be run with args, false if not
 	 */
 	public HashMap<String, String> parseArgs(String[] args){
+		System.out.println("parsing arguments...");
+		
 //		check if no_args or help
 		if (trivialCases(args)) return null;
 		
@@ -41,7 +43,7 @@ public class ArgParser {
 		try{
 			//-O, --output-document=FILE
 			checkSaveToFile(argList);
-			//-S, --spider
+			//--spider
 			checkSpider(argList);
 			//-c
 			checkContinue();
@@ -51,8 +53,11 @@ public class ArgParser {
 			//-t, --tries=NUMBER
 			checkTries();
 			
-			//check if Args left
+			//-i
+			//download multiple files specified in local text document
 			
+			//check if Args left
+			checkForLeftovers(argList);
 			
 			//URL
 			checkURL(argList);
@@ -64,16 +69,29 @@ public class ArgParser {
 			return null;
 		}
 			
+		System.out.println("arguments parsed!");
 		return params;
 	}
 	
-	
+	/**
+	 * Checks if there are any arguments left in List. If so, they must be unrecognized
+	 * @param argList
+	 * @throws ParseException
+	 */
+	public void checkForLeftovers(ArrayList<String> argList) throws ParseException {
+		if (argList.size() > 1){
+			throw new ParseException("Unrecognized arguments left");
+		}
+		//URL is actually an option
+		if (argList.size() == 1 && argList.get(0).startsWith("-")){
+			throw new ParseException("Unrecognized option " + argList.get(0));
+		}
+		
+	}
+
 	public void checkURL(ArrayList<String> argList) throws ParseException{
 		if (argList.size() == 0){
 			throw new ParseException("expecting URL, got no arguments left");
-		}
-		if (argList.size() > 1){
-			throw new ParseException("expecting URL, got still arguments left");
 		}
 		try {
 			new URL(argList.get(0));
