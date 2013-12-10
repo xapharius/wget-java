@@ -45,11 +45,6 @@ public class ArgParser {
 			checkSaveToFile(argList);
 			//--spider
 			checkSpider(argList);
-			//-c
-			checkContinue();
-			//-limit-rate=RATE
-			checkLimitRate();
-
 			//-t, --tries=NUMBER
 			checkTries();
 			
@@ -93,13 +88,26 @@ public class ArgParser {
 		if (argList.size() == 0){
 			throw new ParseException("expecting URL, got no arguments left");
 		}
+		//see if unsupported URL
+		String urlStr = argList.get(0);
+		String[] splits = urlStr.split("://", 2);
+		if (splits.length == 2){
+			if (!splits[0].equals("http")){
+				throw new ParseException("Unsupported Protocol!");
+			}
+		}
+		//protocol missing, put http
+		else{
+			urlStr = "http://" + urlStr;
+		}
+		
 		try {
-			new URL(argList.get(0));
+			new URL(urlStr);
 		} catch (MalformedURLException e) {
 			throw new ParseException("Malformed URL");
 		}
 		
-		params.put("URL", argList.get(0));
+		params.put("URL", urlStr);
 		argList.remove(0);
 	}
 
