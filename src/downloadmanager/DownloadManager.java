@@ -39,7 +39,7 @@ public class DownloadManager {
 		try {
 			url = new URL(config.getParamValue("URL"));
 		} catch (MalformedURLException e) {
-			throw new ConfigurationException("Missing or Malformed URL");
+			throw new ConfigurationException("Missing or Malformed URL in DownloadManager Constructor");
 		}
 		System.out.println("Manager configured!");
 	}
@@ -81,14 +81,17 @@ public class DownloadManager {
 	public void runManager(){
 		
 		//see if local doc option
+		if(config.getParamValue("FileList").equals("true")){
+			//TODO get URL from file as Array
+			//TODO forkManager() for each URL;
+		}
 		
 		//see if spider option
-		if (config.getParamValue("Spider").equals("true") ){
+		if (config.getParamValue("Spider").equals("true")){
 			spider();
 			return;
 		}
-		
-		
+			
 		//download
 		int attempts = 1;
 		Boolean downloaded = false;
