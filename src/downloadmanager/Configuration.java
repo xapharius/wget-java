@@ -101,7 +101,12 @@ public class Configuration {
 	 * @param argDict
 	 * @throws ConfigurationException
 	 */
-	public void updateSaveToFile(HashMap<String, String> argDict) throws ConfigurationException{	
+	public void updateSaveToFile(HashMap<String, String> argDict) throws ConfigurationException{
+		
+		//If filename already specified return
+		if (!argDict.get("SaveToFile").equals("index.html")) return;
+		
+		//create url to easily extract filename
 		URL url;
 		
 		try {

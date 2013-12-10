@@ -142,6 +142,23 @@ public class TestConfiguration {
 	}
 	
 	/**
+	 * Wellformed URL to File, SaveToFile Option already used
+	 */
+	@Test
+	public void TestSemanticURLNamedOutputDocument() {
+		argDict.put("URL", "www.xapharius.com/beer.jpg");
+		argDict.put("SaveToFile", "photo.jpg");
+		try {
+			config.semanticURL(argDict);
+		} catch (ConfigurationException e) {
+			System.out.println(e.getMessage());
+			fail("Exception thrown");
+		}
+		assertEquals(argDict.get("SaveToFile"), "photo.jpg");
+	}
+	
+	
+	/**
 	 * Local File
 	 */
 	@Test
