@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -17,11 +18,16 @@ import downloadmanager.DownloadManager;
 public class TestDownloadManager {
 	
 	private DownloadManager dManager;
+	private DownloadManager dManagerBasic;
 	private HashMap<String, String> argDict;
 
 	@Before
 	public void setUp() throws Exception {
 		argDict = new HashMap<String, String>();
+		
+		HashMap<String, String> basicArgDict = new HashMap<String, String>();
+		basicArgDict.put("URL", "something.com");
+		dManagerBasic = new DownloadManager(basicArgDict);
 	}
 
 	@After
@@ -100,8 +106,10 @@ public class TestDownloadManager {
 	/**
 	 * test downloading file, positive 
 	 */
-	public void testDownloadFile_positive(){
+	@Test
+	public void testDownloadFile_Positive(){
 		argDict.put("URL", "http://xapharius.com/beer.jpg");
+		argDict.put("SaveToFile", "src/tests/trunk/beer.jpg");
 		try {
 			dManager = new DownloadManager(argDict);
 			dManager.downloadFile();
@@ -109,6 +117,28 @@ public class TestDownloadManager {
 			fail(e.getMessage());
 		}
 		
+	}
+	
+	/**
+	 * File with 3 urls
+	 */
+	@Test
+	public void testGetURLsFromFile_Positive(){
+		ArrayList<String> urlList = dManagerBasic.getURLsFromFile("src/tests/trunk/testURLlist.txt");
+		assertNotNull(urlList);
+		assertEquals(urlList.size(), 3);
+		assertEquals(urlList.get(0), "www.xapharius.com");
+		assertEquals(urlList.get(1), "xapharius.com/beer.jpg");
+		assertEquals(urlList.get(2), "xapharius.com/inexistent.txt");
+	}
+	
+	/**
+	 * File Not found
+	 */
+	@Test
+	public void testGetURLsFromFile_UnfindableFile(){
+		ArrayList<String> urlList = dManagerBasic.getURLsFromFile("someList.txt");
+		assertNull(urlList);
 	}
 	
 	

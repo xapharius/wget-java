@@ -6,7 +6,10 @@ package downloadmanager;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import messenger.DownloadMessenger;
@@ -82,8 +86,8 @@ public class DownloadManager {
 		
 		//see if local doc option
 		if(config.getParamValue("FileList").equals("true")){
-			//TODO get URL from file as Array
-			//TODO forkManager() for each URL;
+			fileList();
+			return;
 		}
 		
 		//see if spider option
@@ -107,7 +111,7 @@ public class DownloadManager {
 			}
 		while(!downloaded && attempts <= nrTries);
 	}
-	
+
 	public void downloadFile() throws DownloadException{
 		
 		System.out.println("preparing download for " + url.toString() + "...");
@@ -180,4 +184,48 @@ public class DownloadManager {
 	        conn.disconnect();
 	    }
 	}
+	
+	public void fileList(){
+		//retreive URL from File
+		ArrayList<String> urlList = getURLsFromFile(config.getParamValue("URL"));
+		//for each URL fork manager
+	}
+	
+	/**
+	 * Return the URLs from file in form of ArrayList, if anything goes bad it returns null
+	 * @param filePath
+	 * @return
+	 */
+	public ArrayList<String> getURLsFromFile(String filePath){
+		ArrayList<String> urlList = new ArrayList<String>();
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(filePath));
+			String line = br.readLine();
+			
+			while (line != null){
+				line = line.trim();
+				if (!line.equals(""))
+					urlList.add(line);
+				line = br.readLine();
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Local file not found - " + filePath);
+			return null;
+		} catch (IOException e) {
+			System.out.println("Reading Error " + filePath);
+			return null;
+		} 
+		
+		//Close Stream
+		try {
+			br.close();
+		} catch (Exception e) {
+			System.out.println("Failed Cloasing Stream for " + filePath);
+			return null;
+		}
+		
+		return urlList;
+	}
+	
 }
