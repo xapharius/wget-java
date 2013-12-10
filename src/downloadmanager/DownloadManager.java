@@ -108,6 +108,7 @@ public class DownloadManager {
 		byte buffData[] = new byte[1024];
 		int nrBuffBytes = 0;
 		int nrDownloadedBytes = 0;
+		int nrTotalBytes = getFileSize();
 		
 	    try {
 	        //opening streams
@@ -123,11 +124,11 @@ public class DownloadManager {
 	        	if (nrBuffBytes == -1) {
 	        		//read returns -1 when reached eof
 	        		fileComplete = true;
-	        		++nrDownloadedBytes;
 	        	} else {
 	        		bufferedOut.write(buffData, 0, nrBuffBytes);
+	        		DownloadMessenger.printDownloadProgress(nrDownloadedBytes, nrTotalBytes);
 	        	}      
-	        	//TODO call downloadMessenger to print progress
+	        	
 	        }
 	      	} catch (Exception e) {
 	      		throw new DownloadException("Download Failed");
@@ -141,6 +142,7 @@ public class DownloadManager {
 	      			throw new DownloadException("Closing Streams Failed");
 	      		}
 	      	}
+	    	System.out.println(url.toString() + " sucessfully downloaded!");
 	}
 	
 	/**

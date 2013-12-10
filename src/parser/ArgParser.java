@@ -80,7 +80,7 @@ public class ArgParser {
 	 */
 	public void checkForLeftovers(ArrayList<String> argList) throws ParseException {
 		if (argList.size() > 1){
-			throw new ParseException("Unrecognized arguments left");
+			throw new ParseException("Unrecognized arguments");
 		}
 		//URL is actually an option
 		if (argList.size() == 1 && argList.get(0).startsWith("-")){

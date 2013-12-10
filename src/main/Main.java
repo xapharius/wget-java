@@ -27,7 +27,6 @@ public class Main {
 		try {
 			DownloadManager dmanager = new DownloadManager(params);
 			dmanager.downloadFile();
-			System.out.println("file downloaded");
 		} catch (ConfigurationException | DownloadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

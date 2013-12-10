@@ -32,5 +32,10 @@ public class DownloadMessenger {
 			System.out.println(_url.toString() + " -- broken link!!!");	
 		}
 	}
+
+	public static void printDownloadProgress(int nrDownloadedBytes, int nrTotalBytes) {
+		System.out.println(nrDownloadedBytes + "/" + nrTotalBytes 
+				+ " B - " + nrDownloadedBytes*100/nrTotalBytes + "%");
+	}
 	
 }
