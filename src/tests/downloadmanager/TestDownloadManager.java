@@ -18,16 +18,11 @@ import downloadmanager.DownloadManager;
 public class TestDownloadManager {
 	
 	private DownloadManager dManager;
-	private DownloadManager dManagerBasic;
 	private HashMap<String, String> argDict;
 
 	@Before
 	public void setUp() throws Exception {
 		argDict = new HashMap<String, String>();
-		
-		HashMap<String, String> basicArgDict = new HashMap<String, String>();
-		basicArgDict.put("URL", "something.com");
-		dManagerBasic = new DownloadManager(basicArgDict);
 	}
 
 	@After
@@ -120,11 +115,33 @@ public class TestDownloadManager {
 	}
 	
 	/**
+	 * test downloading file, negative
+	 */
+	@Test
+	public void testDownloadFile_Negative(){
+		argDict.put("URL", "http://xapharius.com/inexistent.txt");
+		try {
+			dManager = new DownloadManager(argDict);
+			dManager.downloadFile();
+		} catch (Exception e) {
+			e.getMessage();
+			fail(e.getMessage());
+		}
+		
+	}
+	
+	/**
 	 * File with 3 urls
 	 */
 	@Test
 	public void testGetURLsFromFile_Positive(){
-		ArrayList<String> urlList = dManagerBasic.getURLsFromFile("src/tests/trunk/testURLlist.txt");
+		argDict.put("URL", "testGetURLsFromFile_Positive");
+		try {
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail();
+		}
+		ArrayList<String> urlList = dManager.getURLsFromFile("src/tests/trunk/testURLlist.txt");
 		assertNotNull(urlList);
 		assertEquals(urlList.size(), 3);
 		assertEquals(urlList.get(0), "www.xapharius.com");
@@ -137,8 +154,46 @@ public class TestDownloadManager {
 	 */
 	@Test
 	public void testGetURLsFromFile_UnfindableFile(){
-		ArrayList<String> urlList = dManagerBasic.getURLsFromFile("someList.txt");
+		argDict.put("URL", "testGetURLsFromFile_UnfindableFile");
+		try {
+			dManager = new DownloadManager(argDict);
+		} catch (ConfigurationException e) {
+			fail();
+		}
+		ArrayList<String> urlList = dManager.getURLsFromFile("someList.txt");
 		assertNull(urlList);
+	}
+	
+	/**
+	 * Check if forked Manager downloads
+	 */
+	@Test
+	public void testForkDonwloadManager(){
+		argDict.put("URL", "FORK TEST");
+		argDict.put("SaveToFile", "src/tests/trunk/forkedBeer.jpg");
+		try {
+			dManager = new DownloadManager(argDict);
+			dManager.forkDownloadManager("http://xapharius.com/beer.jpg");
+		} catch (ConfigurationException e) {
+			fail("Outer Manager Failed");
+		}
+	}
+	
+	/**
+	 * Check if Option --input-file works
+	 */
+	@Test
+	public void testFileList(){
+		argDict.put("URL", "src/tests/trunk/testURLlist.txt");
+		argDict.put("SaveToFile", "src/tests/trunk/fromFileList.jpg");
+		argDict.put("FileList", "true");
+		try {
+			dManager = new DownloadManager(argDict);
+			dManager.runManager();
+		} catch (ConfigurationException e) {
+			System.out.println(e.getMessage());
+			fail("Outer Manager Failed");
+		}
 	}
 	
 	

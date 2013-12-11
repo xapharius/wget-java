@@ -37,14 +37,20 @@ public class DownloadManager {
 	 * @throws ConfigurationException
 	 */
 	public DownloadManager(HashMap<String, String> argDict) throws ConfigurationException{
-		System.out.println("configuring Manager for " + argDict.get("URL") + " ...");
+		System.out.println("\nconfiguring Manager for " + argDict.get("URL") + " ...");
+		
 		config = new Configuration();
 		config.configure(argDict);
-		try {
-			url = new URL(config.getParamValue("URL"));
-		} catch (MalformedURLException e) {
-			throw new ConfigurationException("Missing or Malformed URL in DownloadManager Constructor");
+		
+		//create member url if applicable
+		if(config.getParamValue("FileList").equals("false")){
+			try {
+				url = new URL(config.getParamValue("URL"));
+			} catch (MalformedURLException e) {
+				throw new ConfigurationException("Missing or Malformed URL in DownloadManager Constructor");
+			}
 		}
+		
 		System.out.println("Manager configured!");
 	}
 	
@@ -115,6 +121,12 @@ public class DownloadManager {
 	public void downloadFile() throws DownloadException{
 		
 		System.out.println("preparing download for " + url.toString() + "...");
+		//See if File is available
+		if (!checkRessourceAvailability()){
+			DownloadMessenger.printFileNotFound();
+			return;
+		}
+		
 		System.out.println("file will be saved as " + config.getParamValue("SaveToFile"));
 		
 		InputStream httpIn = null;
@@ -164,7 +176,8 @@ public class DownloadManager {
 	      			throw new DownloadException("Closing Streams Failed");
 	      		}
 	      	}
-	    	System.out.println(url.toString() + " sucessfully downloaded!");
+	    
+	    	DownloadMessenger.printSuccesfulDownload(url.toString());
 	}
 	
 	/**
@@ -185,10 +198,21 @@ public class DownloadManager {
 	    }
 	}
 	
+	/**
+	 * Option --input-file, downloading files specified in a local list
+	 */
 	public void fileList(){
+		
 		//retreive URL from File
 		ArrayList<String> urlList = getURLsFromFile(config.getParamValue("URL"));
+		
+		//File not found
+		if (urlList == null) return;
+		
 		//for each URL fork manager
+		for(String _url: urlList){
+			forkDownloadManager(_url);
+		}
 	}
 	
 	/**
@@ -197,6 +221,7 @@ public class DownloadManager {
 	 * @return
 	 */
 	public ArrayList<String> getURLsFromFile(String filePath){
+		System.out.println("Getting URLs from file...");
 		ArrayList<String> urlList = new ArrayList<String>();
 		BufferedReader br;
 		try {
@@ -225,7 +250,25 @@ public class DownloadManager {
 			return null;
 		}
 		
+		System.out.println("Found " + urlList.size() + " URLs");
 		return urlList;
+	}
+	
+	/**
+	 * Forkes DownloadManager with its configuration, replaces 
+	 * URL parameter (sets --input-file to false) and runs the manager
+	 * @param _url
+	 */
+	public void forkDownloadManager(String _url){
+		HashMap<String, String> forkedParams = config.getParams();
+		forkedParams.put("URL", _url);
+		forkedParams.put("FileList", "false");
+		try {
+			DownloadManager tempDManager = new DownloadManager(forkedParams);
+			tempDManager.runManager();
+		} catch (ConfigurationException e) {
+			//prints have been made during execution
+		}
 	}
 	
 }
