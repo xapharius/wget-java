@@ -20,7 +20,7 @@ public class ParserMessenger {
 		System.out.println("-t,  --tries=NUMBER    \t\t\t set number of retries to NUMBER.");
 		System.out.println("     --spider \t\t\t\t to see if remote file is available.");
 		System.out.println();
-		System.out.println("Currently only http protocol is supported.");
+		System.out.println("Only http protocol is supported.");
 	}
 	
 	/**
